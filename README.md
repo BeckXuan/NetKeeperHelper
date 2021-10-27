@@ -33,6 +33,10 @@ Linux端自动从安卓手机获取闪讯密码并连接闪讯
 
 请对应配置NetKeeperHelper.sh中标有注释的参数
 
+## 鸣谢
+
+getPIN.py修改自miao1007的[Openwrt-NetKeeper](https://github.com/miao1007/Openwrt-NetKeeper)
+
 ## 开源协议
 
 [Apache-2.0 License](https://github.com/BeckXuan/NetKeeperServer/blob/main/LICENSE)

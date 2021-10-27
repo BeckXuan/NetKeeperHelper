@@ -157,7 +157,7 @@ connect() {
     nmcli connection modify "$ppp_id" pppoe.password "$password"
     if [[ "$encrypt_username" == "true" ]]
     then
-        local username=$(python "$dir/getPIN.py" "$ppp_username")
+        local username=$(python3 "$dir/getPIN.py" "$ppp_username")
     else
         local username="$ppp_username"
     fi
