@@ -15,7 +15,7 @@ Linux端自动从安卓手机获取闪讯密码并连接闪讯
 
 使用配套闪讯服务端
 
-详见 [NetKeeperServer][https://github.com/BeckXuan/NetKeeperServer]
+详见 [NetKeeperServer](https://github.com/BeckXuan/NetKeeperServer)
 
 ## 脚本说明
 
