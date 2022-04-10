@@ -39,7 +39,7 @@ phone_port="60666"
 retry_delay="60s"
 
 log() {
-    echo "$(date '+%Y-%m-%d %H:%M:%S') [$1] $2" >> $dir/log
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [$1] $2" >> "$dir/log"
 }
 
 is_eth_avl() {
@@ -150,8 +150,8 @@ connect() {
     local password=$(get_password)
     if [[ "$password" == "fail" ]]
     then
-        log "connect" "fail to get password"
-        reconnect
+        log "connect" "failed to get password"
+        retry
         return
     fi
     nmcli connection modify "$ppp_id" pppoe.password "$password"
@@ -167,18 +167,18 @@ connect() {
         log "connect" "connected"
     else
         #rm -f "$dir/lastMsg"
-        log "connect" "fail to connect"
-        reconnect
+        log "connect" "failed to connect"
+        retry
     fi
 }
 
-reconnect() {
-    log "connect" "reconnect in $retry_delay"
+retry() {
+    log "retry" "retry in $retry_delay"
     sleep "$retry_delay"
-    connect
+    judge
 }
 
-main() {
+judge() {
     if [[ "$eth_avl" == "true" &&
         "$wifi_avl" == "true" &&
         "$(is_connected)" == "false" ]]
@@ -192,24 +192,14 @@ main() {
         local job=$(jobs)
         if [[ $job && "$job" =~ "Running" ]]
         then
-            log "main" "kill job"
+            log "judge" "kill job"
             # $! indicates the PID of the recently created background process
             kill -15 $!
         fi
     fi
 }
 
-trap "log 'main' 'exit' && exit 0" Exit
-eth_avl=$(is_eth_avl)
-wifi_avl=$(is_wifi_avl)
-log "main" "start running"
-main
-# the background precess here is not the same as that below. In the tunnel, the background process is isolated.
-# so wait for it to finish.
-wait
-
-while true
-do
+main() {
     nmcli device monitor | while read line
     do
         if [[ ! "$line" =~ "connected" ]] # matches "connected" & "disconnected"
@@ -220,16 +210,34 @@ do
             $eth_id:*)
                 eth_avl=$(is_eth_avl)
                 #echo "eth_avl:$eth_avl"
-                main
+                judge
             ;;
             $wifi_id:*)
                 wifi_avl=$(is_wifi_avl)
                 #echo "wifi_avl:$wifi_avl"
-                main
+                judge
             ;;
         esac
     done
-    log "main" "nmcli exited unexpectedly"
-    log "main" "retry in 20s"
-    sleep 20s
-done
+    #log "main" "nmcli stopped unexpectedly!"
+}
+
+trap "pkill -P $$; log 'main' 'exit'; exit 0" Exit
+eth_avl=$(is_eth_avl)
+wifi_avl=$(is_wifi_avl)
+
+if [[ $# > 0 ]]
+then
+  log "main" "force connecting once"
+  connect
+  exit 0
+fi
+
+log "main" "start running"
+judge
+# The background process here is not the same as that in main.
+# In the tunnel, the background process is isolated.
+# So wait for it to finish.
+wait
+
+main

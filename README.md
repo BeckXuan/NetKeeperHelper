@@ -39,5 +39,5 @@ getPIN.py修改自miao1007的[Openwrt-NetKeeper](https://github.com/miao1007/Ope
 
 ## 开源协议
 
-[Apache-2.0 License](https://github.com/BeckXuan/NetKeeperServer/blob/main/LICENSE)
+[GPLv2](https://github.com/BeckXuan/NetKeeperServer/blob/main/LICENSE)
 
