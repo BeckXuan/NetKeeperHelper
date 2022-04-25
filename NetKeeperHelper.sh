@@ -1,5 +1,6 @@
 #!/bin/sh
 export LANG=en_US.UTF-8
+export LANGUAGE=en_US.UTF-8
 checkitem="$0"
 procCnt=`ps -A --format='%p%P%C%x%a' --width 2048 -w --sort pid|grep "$checkitem"|grep -v grep|grep -v " -c sh "|grep -v "$$" |grep -c sh|awk '{printf("%d",$1)}'`
 if [[ $procCnt > 0 ]]
